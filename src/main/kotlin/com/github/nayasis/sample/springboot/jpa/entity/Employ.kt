@@ -32,9 +32,6 @@ class Employ: BaseEntity() {
     var hireDate: LocalDate? = null
 
     @Column
-    var birthDate: LocalDateTime? = null
-
-    @Column
     var salary: Int = 0
 
     @JsonIgnore

@@ -45,9 +45,9 @@ class DepartmentController(
 
 @NoArg
 data class ReqDepartment(
-    var id: Long?,
-    var name: String?,
-    var location: String?
+    var id: Long? = null,
+    var name: String? = null,
+    var location: String? = null
 )
 
 class ResDepartmentDetail: Department {
