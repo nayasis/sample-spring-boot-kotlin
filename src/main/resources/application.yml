@@ -1,0 +1,136 @@
+spring:
+  profiles:
+    active: local
+---
+spring:
+  application:
+    name: biz
+  output:
+    ansi:
+      console-available : true
+  datasource:
+    url: jdbc:mariadb://localhost:3307/test
+    driver-class-name: org.mariadb.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      username: id
+      password: password
+      auto-commit: false
+      minimum-idle: 1
+      maximum-pool-size: 4
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      #      ddl-auto: update
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        use_sql_comments: false
+        temp:
+          use_jdbc_metadata_defaults: false
+    open-in-view: false
+  messages:
+    always-use-message-format: false
+    basename: config/i18n
+    cache-duration: -1
+  cache:
+    type: redis
+    redis:
+      key-prefix: biz
+  redis:
+    embedded:
+      enable : false
+      port   : 6379
+    port: 6379
+    timeout: 1500
+    lettuce:
+      pool:
+        max-idle: 1
+        min-idle: 1
+        max-active: 1
+  data:
+    redis:
+      repositories:
+        enabled: false
+  task:
+    execution:
+      pool:
+        core-size: 4
+        max-size: 8
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 5000
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 999999
+      metrics:
+        rollingStatus:
+          timeInMilliseconds: 10000
+      circuitBreaker:
+        requestVolumeThreshold: 20
+        errorThresholdPercentage: 50
+distributed-lock:
+ type: jdbc
+ key-prefix: biz
+ timeout:
+   connection: 1000
+   session: 30000
+ retry:
+   count: 20
+   sleep: 200
+ expire:
+   age: 30000
+   cron: 0 * * * * *
+   enable: false
+server:
+  forward-headers-strategy: NATIVE
+  compression:
+    enabled: true
+  port: 8080
+  error:
+    include-exception: true
+    include-stacktrace: always
+    filter : |-
+      ^io\.github\.nayasis
+      ^org\.springframework\.
+      ^org\.apache\.
+      ^io\.undertow\.
+      ^java\.lang\.reflect\.Method\.invoke
+      ^java\.util\.concurrent\.ThreadPoolExecutor(\.runWorker|\$Worker\.run)
+      ^java\.lang\.Thread\.run
+      ^javax\.servlet
+      ^oracle\.jdbc\.driver\.
+      ^reactor\.core\.scheduler\.SchedulerTask\.call
+      ^sun\.reflect\.
+      ^.*?\.SpringCGLIB
+  shutdown: graceful
+management:
+  health:
+    diskspace:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+jasypt:
+  encryptor:
+    bean: jasyptEncryptor
+logging:
+  level:
+    io.undertow.request: error
+    com.ulisesbocchio.jasyptspringboot: error
+    org.hibernate.type.descriptor.sql.BasicBinder : trace
+    io.github.nayasis : debug
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %highlight(%-5level) %green([%15.15thread]) %blue(%50(\\(%F:%L\\))) %msg%n"
